@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Score Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="controls">
+    <button onclick="resizeBoxes(-10)">Réduire</button>
+    <button onclick="resizeBoxes(10)">Agrandir</button>
+    <button onclick="toggleLayout()">Disposition</button>
+    <button id="invertBtn" onclick="invertTimerDirection()">Mode: Chrono</button>
+  </div>
+
+  <div id="main-dashboard">
+      
+    <!-- NOUVELLE ZONE : ROLSKANET -->
+    <div id="rolskanet-control" class="zone rolskanet-zone" style="width: 100%;">
+      <h2 style="margin-bottom: 5px;">🌐 Synchro Rolskanet</h2>
+      <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
+        <input type="text" id="rolskanetId" placeholder="Lien du live ou ID (ex: 111483)" style="width: 250px; padding: 8px; border-radius: 4px; border: none;">
+        <button class="action-btn" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="fetchRolskanetData()">⬇️ Importer Équipes & Compos</button>
+      </div>
+      <div id="rolskanet-status" style="font-size: 12px; color: #aaa; margin-top: 5px;">En attente de lien...</div>
+    </div>
+
+    <div id="timer-control" class="zone">
+      <h2>Temps</h2>
+      <div id="timer-inputs">
+        <input type="number" id="timerMinutes" value="0" min="0" max="99" oninput="manualSetTime()">
+        <span>:</span>
+        <input type="number" id="timerSeconds" value="0" min="0" max="59" oninput="manualSetTime()">
+      </div>
+      
+      <div class="adjust-buttons">
+        <button onclick="adjustTimer(-60)">-1m</button>
+        <button onclick="adjustTimer(-1)">-1s</button>
+        <button onclick="adjustTimer(1)">+1s</button>
+        <button onclick="adjustTimer(60)">+1m</button>
+      </div>
+
+      <div id="max-time-display">
+        <span>Départ/Cible :</span>
+        <input type="number" id="maxMinutes" value="20" min="0" max="99">
+        <span>:</span>
+        <input type="number" id="maxSeconds" value="0" min="0" max="59">
+      </div>
+      <div id="timer-buttons">
+        <button id="playPauseBtn" onclick="toggleTimer()" class="start-btn">▶</button>
+        <button onclick="resetTimer()" class="reset-btn">⟳</button>
+      </div>
+    </div>
+
+    <div id="period-control" class="zone">
+      <h2>Période</h2>
+      <span id="periodDisplay">ÉCHAUFF.</span>
+      <div class="period-buttons">
+        <button onclick="changePeriod(-1)">−</button>
+        <button onclick="changePeriod(1)">+</button>
+      </div>
+    </div>
+
+    <!-- ZONE REPLAY -->
+    <div id="replay-control" class="zone replay-zone">
+      <h2>Régie Replay</h2>
+      <button id="toggleReplayBtn" class="start-btn" onclick="toggleReplayBuffer()">▶️ Activer le Replay Buffer</button>
+      
+      <div id="replay-content" class="replay-content-hidden">
+        <button id="saveReplayBtn" class="action-btn" onclick="saveReplay()">📸 Capturer l'action !</button>
+        <div class="replay-status">Vidéos prêtes : <span id="replayCount" class="badge">0</span></div>
+        <div class="replay-buttons-grid">
+          <button class="play-btn" onclick="playLastReplay()">⏪ Revoir le dernier</button>
+          <button class="play-all-btn" onclick="playAllReplays()">🎞️ Revoir tout</button>
+          <button class="stop-btn" onclick="hideReplayOnStream()">❌ Forcer l'arrêt</button>
+          <button id="deleteBtn" class="delete-btn" onclick="clearReplays()">🗑️ Vider la liste</button>
+        </div>
+        <div style="margin-top: 10px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;">
+          <label style="cursor: pointer; font-size: 15px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <input type="checkbox" id="loopReplaysCheckbox" style="width: 18px; height: 18px; cursor: pointer;"> 
+            🔁 Boucler "Revoir tout"
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div id="score-b-control" class="zone">
+      <h2 id="domName">Bourges</h2>
+      <div class="controls">
+        <button onclick="changeScore('B', -1)">−</button>
+        <span id="scoreB">0</span>
+        <button onclick="changeScore('B', 1)">+</button>
+      </div>
+      <div class="penalty-section">
+        <h3>Pénalités</h3>
+        <div class="penalty-buttons">
+          <button onclick="addPenalty('B', 2)">2 min</button>
+          <button onclick="addPenalty('B', 5)">5 min</button>
+          <button onclick="addPenalty('B', 10)">10 min</button>
+        </div>
+        <div class="penalty-timers" id="penaltiesB"></div>
+      </div>
+    </div>
+    
+    <div id="score-a-control" class="zone">
+      <h2 id="visName">Visiteur</h2>
+      <div class="controls">
+        <button onclick="changeScore('A', -1)">−</button>
+        <span id="scoreA">0</span>
+        <button onclick="changeScore('A', 1)">+</button>
+      </div>
+      <div class="penalty-section">
+        <h3>Pénalités</h3>
+        <div class="penalty-buttons">
+          <button onclick="addPenalty('A', 2)">2 min</button>
+          <button onclick="addPenalty('A', 5)">5 min</button>
+          <button onclick="addPenalty('A', 10)">10 min</button>
+        </div>
+        <div class="penalty-timers" id="penaltiesA"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

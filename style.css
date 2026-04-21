@@ -1,0 +1,266 @@
+body {
+  background: #222;
+  color: white;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+#controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: column;
+}
+#main-dashboard {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Grille pour le mode disposition horizontale */
+body.horizontal-layout #main-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "timer period"
+    "replay replay"
+    "scoreB scoreA";
+  gap: 20px;
+  align-items: start;
+}
+#timer-control { grid-area: timer; }
+#period-control { grid-area: period; }
+#replay-control { grid-area: replay; }
+#score-b-control { grid-area: scoreB; }
+#score-a-control { grid-area: scoreA; }
+
+.zone {
+  background: #333;
+  padding: 20px 40px;
+  border-radius: 10px;
+  text-align: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: padding 0.2s ease-in-out;
+}
+
+/* Style spécial pour la zone Replay */
+.replay-zone {
+  background: #2b3a4a; 
+  border: 2px solid #4a90e2;
+}
+
+#timer-control h2, #period-control h2, .zone h2 {
+  font-size: 22px; 
+  margin: 0; 
+}
+#periodDisplay {
+  font-size: 30px; 
+  font-weight: bold;
+}
+#timer-inputs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  font-size: 30px;
+  font-weight: bold;
+}
+#timer-inputs input {
+  background-color: #555;
+  border: 1px solid #666;
+  border-radius: 4px;
+  color: white;
+  width: 60px;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+}
+#timer-inputs span { padding-bottom: 4px; }
+
+#max-time-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #aaa;
+}
+#max-time-display input {
+  background-color: #444;
+  border: 1px solid #666;
+  color: #aaa;
+  width: 35px;
+  text-align: center;
+  border-radius: 3px;
+}
+.period-buttons, #timer-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+#timer-buttons button {
+  font-size: 20px;
+  padding: 5px 15px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+  border: none;
+  transition: transform 0.1s, filter 0.2s;
+}
+button:active { transform: scale(0.95); }
+button:hover { filter: brightness(1.2); }
+
+.start-btn { background-color: #28a745; color: white; }
+.stop-btn { background-color: #dc3545; color: white; }
+.reset-btn { background-color: #6c757d; color: white; }
+
+.action-btn {
+  background-color: #ffc107;
+  color: black;
+  font-size: 18px;
+  padding: 15px;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+.play-btn { background-color: #17a2b8; color: white; }
+.play-all-btn { background-color: #6f42c1; color: white; }
+.delete-btn { background-color: #343a40; color: white; border: 1px solid #666;}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  font-size: 30px;
+}
+
+.replay-content-hidden { display: none; }
+.replay-content-active {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+  border-top: 1px solid #555;
+  padding-top: 15px;
+}
+.replay-status { font-size: 16px; font-weight: bold; }
+.badge { background: #dc3545; padding: 2px 8px; border-radius: 10px; color: white; }
+.replay-buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.penalty-section { margin-top: 15px; border-top: 1px solid #555; padding-top: 15px; }
+.penalty-section h3 { margin: 0 0 10px 0; font-size: 18px; }
+.penalty-buttons { display: flex; justify-content: center; gap: 10px; }
+.penalty-buttons button { font-size: 14px; padding: 5px 10px; background-color: #555; color: white; }
+.penalty-timers { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.penalty-item { background-color: #444; padding: 5px 10px; border-radius: 4px; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
+.penalty-time-inputs { display: flex; align-items: center; gap: 2px; font-size: 18px; }
+.penalty-time-inputs input { background-color: transparent; border: none; color: white; font-size: 18px; font-weight: bold; width: 28px; text-align: right; -moz-appearance: textfield; }
+.penalty-time-inputs input::-webkit-outer-spin-button,
+.penalty-time-inputs input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.penalty-delete-btn { background: #c82333; border: none; color: white; cursor: pointer; border-radius: 4px; padding: 2px 6px; font-size: 14px; }
+body.horizontal-layout #controls { flex-direction: row; }
+/* Nouveaux boutons d'ajustement du chrono */
+.adjust-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.adjust-buttons button {
+  font-size: 14px;
+  padding: 4px 8px;
+  background-color: #555;
+  color: white;
+  border: 1px solid #777;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.adjust-buttons button:hover {
+  background-color: #777;
+}
+
+/* --- REGIE SPOTIFY --- */
+.spotify-zone {
+  background: #191414; /* Vert très sombre façon Spotify */
+  border: 2px solid #1db954;
+}
+
+.spotify-config {
+  background: rgba(0,0,0,0.5);
+  padding: 15px;
+  border-radius: 8px;
+  gap: 10px;
+}
+
+.spotify-input-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-size: 14px;
+}
+.spotify-input-group input {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #222;
+  color: white;
+  margin-top: 5px;
+}
+
+.spotify-btn-auth {
+  background: #1db954;
+  color: white;
+  font-size: 14px;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.spotify-btn-auth:hover { background: #1ed760; }
+
+.spotify-track-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.sp-name {
+  width: 30%;
+  padding: 8px;
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+}
+.sp-link {
+  width: 55%;
+  padding: 8px;
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+}
+.spotify-track-row .play-btn {
+  width: 15%;
+  padding: 8px 0;
+}
