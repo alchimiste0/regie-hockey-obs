@@ -15,16 +15,58 @@
 
   <div id="main-dashboard">
       
-    <!-- NOUVELLE ZONE : ROLSKANET -->
+    <!-- ZONE ROLSKANET -->
     <div id="rolskanet-control" class="zone rolskanet-zone" style="width: 100%;">
       <h2 style="margin-bottom: 5px;">🌐 Synchro Rolskanet</h2>
       <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
-        <input type="text" id="rolskanetId" placeholder="Lien du live ou ID (ex: 111483)" style="width: 250px; padding: 8px; border-radius: 4px; border: none;">
+        <textarea id="rolskanetId" placeholder="Lien du match (ex: 111483) ou code JSON (F12)" style="width: 300px; height: 40px; padding: 8px; border-radius: 4px; border: none; resize: vertical; font-family: sans-serif;"></textarea>
         <button class="action-btn" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="fetchRolskanetData()">⬇️ Importer Équipes & Compos</button>
       </div>
-      <div id="rolskanet-status" style="font-size: 12px; color: #aaa; margin-top: 5px;">En attente de lien...</div>
+      <div style="margin-top: 8px;">
+        <button class="blue-btn" style="width: 100%; font-size: 13px;" onclick="updatePublicStats()">🔄 Aspirer les Stats (Classement, Pointeurs, Direct)</button>
+      </div>
+      <div id="rolskanet-status" style="font-size: 12px; color: #aaa; margin-top: 5px;">En attente de lien ou de code...</div>
     </div>
 
+    <!-- ZONE SCORE DOMICILE -->
+    <div id="score-b-control" class="zone">
+      <input type="text" id="domName" class="team-name-input" value="DOMICILE" onchange="updateTeamName('B', this.value)">
+      <div class="controls">
+        <button onclick="directChangeScore('B', -1)">−</button>
+        <span id="scoreB">0</span>
+        <button onclick="promptGoal('B')">+</button>
+      </div>
+      <div class="penalty-section">
+        <h3>Pénalités</h3>
+        <div class="penalty-buttons">
+          <button onclick="promptPenalty('B', 2)">2 min</button>
+          <button onclick="promptPenalty('B', 5)">5 min</button>
+          <button onclick="promptPenalty('B', 10)">10 min</button>
+        </div>
+        <div class="penalty-timers" id="penaltiesB"></div>
+      </div>
+    </div>
+    
+    <!-- ZONE SCORE VISITEUR -->
+    <div id="score-a-control" class="zone">
+      <input type="text" id="visName" class="team-name-input" value="VISITEUR" onchange="updateTeamName('A', this.value)">
+      <div class="controls">
+        <button onclick="directChangeScore('A', -1)">−</button>
+        <span id="scoreA">0</span>
+        <button onclick="promptGoal('A')">+</button>
+      </div>
+      <div class="penalty-section">
+        <h3>Pénalités</h3>
+        <div class="penalty-buttons">
+          <button onclick="promptPenalty('A', 2)">2 min</button>
+          <button onclick="promptPenalty('A', 5)">5 min</button>
+          <button onclick="promptPenalty('A', 10)">10 min</button>
+        </div>
+        <div class="penalty-timers" id="penaltiesA"></div>
+      </div>
+    </div>
+
+    <!-- ZONE TEMPS -->
     <div id="timer-control" class="zone">
       <h2>Temps</h2>
       <div id="timer-inputs">
@@ -49,15 +91,43 @@
       <div id="timer-buttons">
         <button id="playPauseBtn" onclick="toggleTimer()" class="start-btn">▶</button>
         <button onclick="resetTimer()" class="reset-btn">⟳</button>
+        <button onclick="promptTimeout()" class="timeout-btn" title="Temps Mort">⏸️ TM</button>
       </div>
     </div>
 
+    <!-- ZONE PÉRIODES -->
     <div id="period-control" class="zone">
-      <h2>Période</h2>
-      <span id="periodDisplay">ÉCHAUFF.</span>
-      <div class="period-buttons">
-        <button onclick="changePeriod(-1)">−</button>
-        <button onclick="changePeriod(1)">+</button>
+      <h2>Périodes</h2>
+      <div class="grid-3col">
+        <button class="blue-btn" onclick="setPeriod(0)">Échauffement</button>
+        <button class="blue-btn" onclick="setPeriod(1)">Période 1</button>
+        <button class="blue-btn" onclick="setPeriod(2)">Mi-temps</button>
+        <button class="blue-btn" onclick="setPeriod(3)">Période 2</button>
+        <button class="blue-btn" onclick="setPeriod(4)">Prolongation</button>
+        <button class="blue-btn" onclick="setPeriod(5)">Tirs au but</button>
+      </div>
+      <div style="margin-top: 5px; font-size: 14px; color:#aaa;">En cours : <span id="periodDisplay" style="color:white; font-weight:bold;">Échauffement</span></div>
+    </div>
+
+    <!-- ZONE SCÈNES OBS -->
+    <div id="scene-control" class="zone">
+      <h2>Scènes</h2>
+      <div class="grid-2col">
+        <button class="blue-btn" onclick="switchScene(sourceNames.sceneName)">Live</button>
+        <button class="blue-btn" onclick="switchScene(sourceNames.compoScene)">Composition</button>
+        <button class="blue-btn" onclick="switchScene(sourceNames.miTempsScene)">Mi-temps</button>
+        <button class="blue-btn" onclick="switchScene(sourceNames.finMatchScene)">Fin de match</button>
+      </div>
+    </div>
+
+    <!-- ZONE AFFICHAGE GRAPHICS (5s) -->
+    <div id="graphic-control" class="zone">
+      <h2>Affichage (5 sec)</h2>
+      <div class="grid-2col">
+        <button class="blue-btn" onclick="triggerGraphic(sourceNames.overlayReseaux)">Réseaux</button>
+        <button class="blue-btn" onclick="triggerGraphic(sourceNames.overlayClassement)">TOP 5 Classement</button>
+        <button class="blue-btn" onclick="triggerGraphic(sourceNames.overlayPointeurs)">TOP 5 Pointeurs</button>
+        <button class="blue-btn" onclick="triggerGraphic(sourceNames.overlayAutresScores)">Matchs en direct</button>
       </div>
     </div>
 
@@ -84,40 +154,14 @@
       </div>
     </div>
 
-    <div id="score-b-control" class="zone">
-      <h2 id="domName">Bourges</h2>
-      <div class="controls">
-        <button onclick="changeScore('B', -1)">−</button>
-        <span id="scoreB">0</span>
-        <button onclick="changeScore('B', 1)">+</button>
-      </div>
-      <div class="penalty-section">
-        <h3>Pénalités</h3>
-        <div class="penalty-buttons">
-          <button onclick="addPenalty('B', 2)">2 min</button>
-          <button onclick="addPenalty('B', 5)">5 min</button>
-          <button onclick="addPenalty('B', 10)">10 min</button>
-        </div>
-        <div class="penalty-timers" id="penaltiesB"></div>
-      </div>
-    </div>
-    
-    <div id="score-a-control" class="zone">
-      <h2 id="visName">Visiteur</h2>
-      <div class="controls">
-        <button onclick="changeScore('A', -1)">−</button>
-        <span id="scoreA">0</span>
-        <button onclick="changeScore('A', 1)">+</button>
-      </div>
-      <div class="penalty-section">
-        <h3>Pénalités</h3>
-        <div class="penalty-buttons">
-          <button onclick="addPenalty('A', 2)">2 min</button>
-          <button onclick="addPenalty('A', 5)">5 min</button>
-          <button onclick="addPenalty('A', 10)">10 min</button>
-        </div>
-        <div class="penalty-timers" id="penaltiesA"></div>
-      </div>
+  </div>
+
+  <!-- FENÊTRE MODALE POUR LE CHOIX DU JOUEUR / TEMPS MORT -->
+  <div id="player-modal" class="modal">
+    <div class="modal-content">
+      <h3 id="modal-title">Sélectionnez le joueur</h3>
+      <div id="player-grid" class="player-grid"></div>
+      <button class="modal-close-btn" onclick="closePlayerModal()">Annuler</button>
     </div>
   </div>
 

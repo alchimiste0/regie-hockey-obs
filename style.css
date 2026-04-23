@@ -24,19 +24,23 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-/* Grille pour le mode disposition horizontale */
 body.horizontal-layout #main-dashboard {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas:
-    "timer period"
-    "replay replay"
-    "scoreB scoreA";
+    "rolskanet rolskanet rolskanet"
+    "timer period scenes"
+    "scoreB graphics scoreA"
+    "replay replay replay";
   gap: 20px;
   align-items: start;
 }
+
+#rolskanet-control { grid-area: rolskanet; }
 #timer-control { grid-area: timer; }
 #period-control { grid-area: period; }
+#scene-control { grid-area: scenes; }
+#graphic-control { grid-area: graphics; }
 #replay-control { grid-area: replay; }
 #score-b-control { grid-area: scoreB; }
 #score-a-control { grid-area: scoreA; }
@@ -51,13 +55,11 @@ body.horizontal-layout #main-dashboard {
   flex-direction: column;
   gap: 10px;
   transition: padding 0.2s ease-in-out;
+  position: relative;
 }
 
-/* Style spécial pour la zone Replay */
-.replay-zone {
-  background: #2b3a4a; 
-  border: 2px solid #4a90e2;
-}
+.replay-zone { background: #2b3a4a; border: 2px solid #4a90e2; }
+.rolskanet-zone { background: #2f2a1a; border: 2px solid #e2b04a; }
 
 #timer-control h2, #period-control h2, .zone h2 {
   font-size: 22px; 
@@ -67,6 +69,24 @@ body.horizontal-layout #main-dashboard {
   font-size: 30px; 
   font-weight: bold;
 }
+
+.team-name-input {
+  background: transparent;
+  border: 1px dashed transparent;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  font-family: inherit;
+  transition: border 0.2s;
+}
+.team-name-input:hover, .team-name-input:focus {
+  border: 1px dashed #fff;
+  outline: none;
+  background: rgba(255,255,255,0.1);
+}
+
 #timer-inputs {
   display: flex;
   justify-content: center;
@@ -87,6 +107,24 @@ body.horizontal-layout #main-dashboard {
 }
 #timer-inputs span { padding-bottom: 4px; }
 
+.adjust-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+.adjust-buttons button {
+  font-size: 14px;
+  padding: 4px 8px;
+  background-color: #555;
+  color: white;
+  border: 1px solid #777;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.adjust-buttons button:hover { background-color: #777; }
+
 #max-time-display {
   display: flex;
   justify-content: center;
@@ -103,16 +141,38 @@ body.horizontal-layout #main-dashboard {
   text-align: center;
   border-radius: 3px;
 }
+
 .period-buttons, #timer-buttons {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 15px;
 }
-#timer-buttons button {
-  font-size: 20px;
-  padding: 5px 15px;
+#timer-buttons button { font-size: 20px; padding: 5px 15px; }
+
+.grid-3col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
 }
+
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.blue-btn {
+  background-color: #4a90e2;
+  color: white;
+  font-size: 14px;
+  padding: 10px 5px;
+}
+.blue-btn:hover { background-color: #357abd; }
+
+.timeout-btn { background-color: #fd7e14; color: white; border: none; }
 
 button {
   padding: 10px 20px;
@@ -174,93 +234,56 @@ button:hover { filter: brightness(1.2); }
 .penalty-time-inputs input::-webkit-outer-spin-button,
 .penalty-time-inputs input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .penalty-delete-btn { background: #c82333; border: none; color: white; cursor: pointer; border-radius: 4px; padding: 2px 6px; font-size: 14px; }
-body.horizontal-layout #controls { flex-direction: row; }
-/* Nouveaux boutons d'ajustement du chrono */
-.adjust-buttons {
-  display: flex;
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.8);
   justify-content: center;
-  gap: 8px;
-  margin-top: 5px;
-  margin-bottom: 10px;
-}
-
-.adjust-buttons button {
-  font-size: 14px;
-  padding: 4px 8px;
-  background-color: #555;
-  color: white;
-  border: 1px solid #777;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.adjust-buttons button:hover {
-  background-color: #777;
-}
-
-/* --- REGIE SPOTIFY --- */
-.spotify-zone {
-  background: #191414; /* Vert très sombre façon Spotify */
-  border: 2px solid #1db954;
-}
-
-.spotify-config {
-  background: rgba(0,0,0,0.5);
-  padding: 15px;
-  border-radius: 8px;
-  gap: 10px;
-}
-
-.spotify-input-group {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  font-size: 14px;
-}
-.spotify-input-group input {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #444;
-  background: #222;
-  color: white;
-  margin-top: 5px;
-}
-
-.spotify-btn-auth {
-  background: #1db954;
-  color: white;
-  font-size: 14px;
-  padding: 8px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-.spotify-btn-auth:hover { background: #1ed760; }
-
-.spotify-track-row {
-  display: flex;
   align-items: center;
-  gap: 5px;
-  margin-bottom: 8px;
 }
-.sp-name {
-  width: 30%;
-  padding: 8px;
-  background: #333;
+
+.modal-content {
+  background-color: #333;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #555;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80%;
+  overflow-y: auto;
+  text-align: center;
+}
+
+.modal-content h3 { margin-top: 0; }
+
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.player-grid button {
+  background: #444;
+  font-size: 13px;
+  padding: 10px;
+  border: 1px solid #666;
+  color: white; 
+}
+.player-grid button b { font-size: 16px; color: #ffc107; }
+.player-grid button:hover { background: #555; border-color: #ffc107; }
+
+.player-grid .staff-btn {
+  background: #2b3a4a;
+}
+.player-grid .staff-btn b { color: #4a90e2; }
+
+.modal-close-btn {
+  background: #dc3545;
+  width: 100%;
   color: white;
-  border: 1px solid #555;
-  border-radius: 4px;
-}
-.sp-link {
-  width: 55%;
-  padding: 8px;
-  background: #333;
-  color: white;
-  border: 1px solid #555;
-  border-radius: 4px;
-}
-.spotify-track-row .play-btn {
-  width: 15%;
-  padding: 8px 0;
 }
